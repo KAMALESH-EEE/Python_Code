@@ -46,6 +46,7 @@ if(flag):
 
     flames()
     print(fl)
+    print('your data is stored in flames.txt file !')
     
     re=open('learning/flames.txt','a')
     re.write(st+'/'+fl[0]+'\n')
