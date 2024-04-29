@@ -16,7 +16,7 @@ p=[]
 s=(0,0)
 e=(N-1,N-1)
 
-def check(a):
+def check(a): #check the last move is valid or not eg: (0,1)->(1,0) is not possible
     if len(a) < 2:
         return False
     i,j = a[-1]
@@ -26,7 +26,7 @@ def check(a):
         return False
     return True
 
-def P_ways(r):
+def P_ways(r): # Possible ways that the rat can move
     global N,p,s,e,a
     i,j=r[-1]
     root = [k for k in r]
@@ -38,29 +38,29 @@ def P_ways(r):
         p.append(root)
         return
     
-    if i+1 <N and a[i+1][j]==1 and ((i+1,j) not in root):
+    if i+1 <N and a[i+1][j]==1 and ((i+1,j) not in root): # to move Down
         root.append((i+1,j))
         P_ways(root)
         root.pop()
 
-    if j+1 <N and a[i][j+1]==1 and ((i,j+1) not in root) :
+    if j+1 <N and a[i][j+1]==1 and ((i,j+1) not in root) : # to move Right
         root.append((i,j+1))
         P_ways(root)
         root.pop()
 
-    if not(i ==0 ) and a[i-1][j]==1 and ((i-1,j) not in root):
+    if not(i ==0 ) and a[i-1][j]==1 and ((i-1,j) not in root): # to move Up
         root.append((i-1,j))
         P_ways(root)
         root.pop()
 
-    if not(j ==0 ) and a[i][j-1]==1 and ((i,j-1) not in root):
+    if not(j ==0 ) and a[i][j-1]==1 and ((i,j-1) not in root): # to move Left
         root.append((i,j-1))
         P_ways(root)
         root.pop()
     return
 
 
-def cov(a):
+def cov(a): # Covert the path co-ordinated int Char String
     s=''
     for t in range(1,len(a)):
         i,j = a[t-1]
@@ -75,6 +75,8 @@ def cov(a):
         if (k,l)== (i-1,j):
             s+='U '
     return s
+    
 P_ways([s])
-for i in p:
+
+for i in p: # Printing Results
     print(cov(i))
