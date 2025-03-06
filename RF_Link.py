@@ -1,10 +1,3 @@
-'''
-
-RF Link - Power Calculator
-
-'''
-
-
 class RF_link:
     def __init__(self,radio):
         self.Radio=radio
@@ -14,6 +7,10 @@ class RF_link:
     def __str__(self):
         return f"{self.Radio.Name}|| Rx_pow: {self.Rx_pow}dBm"
         
+class open:
+    Name='[open]'
+    def Link(R,Att,p_ref):
+        return
 
 class Radio:
     Name="Radio"
@@ -24,7 +21,7 @@ class Radio:
         self.TX_power=Tx
         self.RX_sen = Rx
         self.Attenuation = Attu
-        self.ANT=None
+        self.ANT=open
         self.Vis=[]
 
     def __str__(self):
@@ -50,11 +47,27 @@ class Radio:
         for i in self.Vis:
             print(i)
 
-    
+    def View(self,F=False):
+        print('=============')
+        print(f"{self.Name}\n1-> TX power{self.TX_power}\n2-> Sensitivity{self.RX_sen}\n3-> Attenuator{self.Attenuation}")
+        print('\n=============')
+        if F:
+            t=int(input('Choose to Edit:'))
+            if t==1:
+                v=int(input('Enter new TX power:'))
+                self.TX_power=v
+            elif t==2:
+                v=int(input('Enter new RX sensitivity:'))
+                self.RX_sen=v
 
-        
+            elif t==3:
+                v=int(input('Enter new Attenuation:'))
+                self.Attenuation=v
+            else:
+                print('Wrong Input')
+                return
+            print('Updated....\n')
 
-                        
 
 class Attenuator:
     Name = 'Attenuator'
@@ -62,9 +75,9 @@ class Attenuator:
 
         self.Id=Id
         self.Attenuation = Attu
-        self.Name =  "Attenuator_"+str(Id+1)
-        self.Port1=None
-        self.Port2=None
+        self.Name =  str(self.Attenuation)+"dB-Attenuator_"+str(Id+1)
+        self.Port1=open
+        self.Port2=open
 
     def __str__(self):
         return f" {self.Port1.Name} <=> ({self.Attenuation}dB ){self.Name} <=> {self.Port2.Name} "
@@ -75,6 +88,16 @@ class Attenuator:
             self.Port2.Link(R,Att,self)
         else:
             self.Port1.Link(R,Att,self)
+        
+    def View(self,F=False):
+        print('=============')
+        print(f'{self.Name}\nAttenuation{self.Attenuation}')
+        print('=============')
+        if F:
+            v=int(input('Enter new Attenuation:'))
+            self.Attenuation=v
+            self.Name =  str(self.Attenuation)+"dB-Attenuator_"+str(self.Id+1)
+            print('Updated....\n')
 
     
 class Divider:
@@ -85,12 +108,12 @@ class Divider:
         self.sum=sum
         self.iso=iso
 
-        self.Port1=None
-        self.PortS=None
-        self.Port2=None
+        self.Port1=open
+        self.PortS=open
+        self.Port2=open
 
     def __str__(self):
-        return f"{self.Port1.Name} <=> {self.Name} <=> {self.Port2.Name}\n{' '*(len(self.Port1.Name)+3)}||\n{' '*(len(self.Port1.Name))}{self.PortS.Name}"
+        return f"{self.Port1.Name} <=> {self.Name} <=> {self.Port2.Name}\n{' '*(len(self.Port1.Name)+7)}||\n{' '*(len(self.Port1.Name)+3)}{self.PortS.Name}"
         
     def Link(self,R,Att,p_ref):
         if p_ref == self.Port1:
@@ -109,7 +132,19 @@ class Divider:
             temp=Att+self.sum
             self.Port2.Link(R,temp,self)
 
-
+    def View(self,F=False):
+        print('=============')
+        print(self.Name +'\n1-> Sum'+self.sum+'\n2-> Isolation '+self.iso)
+        print('\n=============')
+        if F:
+            t=input('Enter Value [sum iso]')
+            try:
+                temp=t.split(' ')
+                self.sum,self.iso = int(temp[0]) , int(temp[1])
+            except:
+                print('Invalid Input')
+                return
+            print('Updated....\n')
 
 PARTS=[Radio,Attenuator,Divider]
 RADIO=[]
@@ -163,11 +198,11 @@ def Part_duplicate():
     
     if type(p_ref) == Attenuator:
         for i in range(n):
-            Attu_create(p_ref.TX_power,p_ref.RX_sen)
+            Attu_create(p_ref.Attenuation)
     
     if type(p_ref) == Divider:
         for i in range(n):
-            Divider_create(p_ref.TX_power,p_ref.RX_sen)
+            Divider_create()
 
 def PRT_list():
     t=1
@@ -198,12 +233,13 @@ def PRT_list():
         for i in DIVIDER:
             print(f"{l} => {i.Name}")
             l+=1
-        return ATTU[int(input('Enter Divider ID: ')) -1]
+        return DIVIDER[int(input('Enter Divider ID: ')) -1]
     
-def Connect():
-        p_ref=PRT_list()        
-        t=PRT_list()
+def Connect(p_ref,t):
+        
+        print(f'Linking{p_ref.Name} == {t.Name}')
         if id(t)==id(p_ref):
+
             print("LoopBack Not Possible")
             return
         if type(p_ref) == Radio:
@@ -265,19 +301,78 @@ def check():
     else:
         print(p_ref)
 
+
+#==================================
+
+n=int(input('Enter No. Radio'))
+
+for i in range(n):
+    Radio_create(40,-90)
+
+for i in range(n-1):
+    Attu_create(30)
+
+for i in range(n-2):
+    Divider_create()
+
+R1=RADIO[0]
+RL=RADIO[-1]
+
+R1.ANT=ATTU[0]
+ATTU[0].Port1=R1
+
+A=ATTU[0]
+
+
+for i in range(len(DIVIDER)):
+    D=DIVIDER[i]
+    R=RADIO[i+1]
+    A.Port2=D
+    D.Port1=A
+    D.PortS=R
+    R.ANT=D
+    A=ATTU[i+1]
+    A.Port1=D
+    D.Port2=A
+
+A.Port2=RL
+RL.ANT=A
+
+#====================================
+
+
 while True:
-    op=int(input("1->Create Part\n2->Duplicate Part\n3->Connect Parts\n4->RUN\n5->check\nSelect:"))
+    op=int(input("\n\n1->Create Part\n2->Duplicate Part\n"
+    "3->Connect Parts\n4->RUN\n5->check\n"
+    "6->View Part\n7->Edit part\nSelect:"))
     if op==1:
         Part_create()
     elif op==2:
         Part_duplicate()
     elif op==3:
-        Connect()
+        p_ref=PRT_list()        
+        t=PRT_list()
+        Connect(p_ref,t)
 
     elif op==4:
         for i in RADIO:
+            i.Vis=[]
+        for i in RADIO:
             i.TX_link()
+        for i in RADIO:
+            print(f'======{i.Name}======')
+            i.VisList()
+            print('======================\n')
+    elif op ==6:
+        part=PRT_list()
+        part.View()
+
+    elif op ==7:
+        part=PRT_list()
+        part.View(F=True)
+
     else:
         check()
 
         
+#======================================
