@@ -266,7 +266,7 @@ def check():
         print(p_ref)
 
 while True:
-    op=int(input("1->Create Part\n2->Duplicate Part\n3->Connect Parts\n4->RUN\n5->check"))
+    op=int(input("1->Create Part\n2->Duplicate Part\n3->Connect Parts\n4->RUN\n5->check\nSelect:"))
     if op==1:
         Part_create()
     elif op==2:
