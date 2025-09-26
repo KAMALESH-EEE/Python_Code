@@ -17,7 +17,7 @@ f_n=input('Enter Girl Name: ')
 m_n=m_n.lower()
 f_n=f_n.lower()
 st=m_n+'-'+f_n
-re=open('learning/flames.txt','r')
+re=open('flames.txt','r')
 li=re.readlines()
 flag =True
 for s in li:
@@ -48,5 +48,5 @@ if(flag):
     print(fl)
     print('your data is stored in flames.txt file !')
     
-    re=open('learning/flames.txt','a')
+    re=open('flames.txt','a')
     re.write(st+'/'+fl[0]+'\n')
