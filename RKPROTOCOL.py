@@ -76,13 +76,6 @@ class COM_FIFO:
         
 
 
-
-            
-
-            
-
-
-
 class RK_COM:
     
     def __init__(self):
